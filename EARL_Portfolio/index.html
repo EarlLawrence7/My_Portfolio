@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth snap-y snap-proximity">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earl Portfolio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Hide scrollbar for a cleaner edge-to-edge tech look */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        body {
+            background-color: #030303; 
+            color: #a1a1aa; 
+        }
+
+        /* --- THE DEEP SPACE HUD GRID --- */
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.04) 3px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 3px, transparent 1px);
+            background-size: 70px 70px;
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 100%);
+            mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 100%);
+        }
+
+        .hud-line {
+            position: relative;
+        }
+        .hud-line::before {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 50%;
+            width: 0.5rem;
+            height: 2px;
+            background-color: #3f3f46;
+        }
+
+        .glow-text {
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Tech Node Styling */
+        .tech-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tech-node:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .tech-node:hover i, .tech-node:hover span.text-icon {
+            color: #34d399; 
+        }
+
+        /* --- THE MOVING TRAIN (MARQUEE) CSS --- */
+        .marquee-container {
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+        .marquee-content {
+            display: flex;
+            width: max-content;
+            animation: marquee 40s linear infinite; 
+        }
+        .marquee-content:hover {
+            animation-play-state: paused;
+        }
+        @keyframes marquee {
+            to { transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-100 flex justify-center overflow-x-hidden">
+
+    <div class="fixed inset-0 z-[-2] pointer-events-none bg-grid-pattern"></div>
+    <canvas id="ambient-canvas" class="fixed inset-0 z-[-1] pointer-events-none"></canvas>
+
+    <main class="w-full max-w-7xl mx-auto border-x border-zinc-800/40 min-h-screen flex flex-col relative bg-black/20 backdrop-blur-[1px]">
+
+        <header class="fixed top-0 w-full max-w-7xl z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800/40">
+            <div class="grid grid-cols-3 text-[12px] md:text-[15px] font-mono tracking-widest uppercase text-zinc-400 border-b border-zinc-800/40">
+                <div class="p-3 border-r border-zinc-800/40 flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                    <span class="hidden md:inline">Cebu City, PH</span>
+                    <span class="md:hidden">CEB</span>
+                </div>
+                <div class="p-3 border-r border-zinc-800/40 text-center" id="live-clock">
+                    --:--:--
+                </div>
+                <div class="p-3 text-right text-emerald-500/80" id="mouse-tracker">
+                    X:0000 Y:0000
+                </div>
+            </div>
+            
+            <nav class="flex gap-6 md:gap-8 px-6 md:px-8 py-4 font-mono text-[16px] md:text-[20px] uppercase tracking-widest text-zinc-400">
+                <a href="#about" class="hover:text-emerald-400 transition-colors">About</a>
+                <a href="#projects-container" class="hover:text-emerald-400 transition-colors">Projects</a>
+                <a href="#contact" class="hover:text-emerald-400 transition-colors">Contact</a>
+            </nav>
+        </header>
+
+        <section id="about" class="min-h-screen flex flex-col justify-center snap-start pt-32 pb-16 px-8 md:px-16 glow-text relative z-10">
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-7xl font-bold text-white tracking-tighter mb-4">Earl Lawrence Baguio</h1>
+                <p class="font-mono text-xs md:text-sm text-zinc-400 tracking-widest uppercase border-l-2 border-emerald-500 pl-4 leading-relaxed">
+                    Computer Engineer | Web Developer <br class="hidden md:block"> Mobileapp Developer | Software Developer | AI Automation
+                </p>
+                <div class="flex flex-wrap gap-4 mt-6 font-mono text-[13px] text-zinc-500 uppercase tracking-widest">
+                    <span><i class="fas fa-map-marker-alt text-emerald-500 mr-1"></i> F. Jaca St, Inayawan Cebu City</span>
+                    <span><i class="fas fa-phone text-emerald-500 mr-1"></i> +63 9567611256</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 text-sm md:text-base leading-relaxed mb-12">
+                <div class="md:col-span-5 font-mono text-zinc-300">
+                    <p class="mb-4 text-emerald-400/80">"Ready to learn, driven to succeed."</p>
+                    <p>My objective is to secure a position where I can apply my technical skills and academic knowledge, contribute to meaningful projects, and grow professionally within the organization.</p>
+                </div>
+                <div class="md:col-span-7 text-zinc-400">
+                    <h1 class="text-4xl md:text-1x1 font-bold text-white tracking-tighter mb-4">About me</h1>
+                    <p class="mb-4">Motivated and detail-oriented Bachelor of Science in Computer Engineering graduate at the Cebu Institute of Technology – University with a strong foundation in Web development, Mobile application development, and Internet of Things (IoT) systems. Equipped with academic and project-based experience in designing, developing, and implementing technology solutions that address real-world challenges.</p>
+                    <p>Eager to begin a professional career in a dynamic organization where technical knowledge, creativity, and dedication can contribute to meaningful projects, organizational success, and continuous personal and professional growth.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-8 mt-4">
+                <a href="Earl_Baguio_Resume.pdf" download class="inline-flex items-center gap-3 px-8 py-4 border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-400 transition-all text-xs font-mono tracking-widest cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                    <i class="fas fa-download"></i> [ DOWNLOAD_RESUME ]
+                </a>
+                
+                <div class="flex gap-6 text-2xl text-zinc-500">
+                    <a href="https://github.com/EarlLawrence7" target="_blank" title="GitHub" class="hover:text-emerald-400 transition-colors transform hover:-translate-y-1 duration-200">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/earl-lawrence-baguio-3106b2287/" target="_blank" title="LinkedIn" class="hover:text-emerald-400 transition-colors transform hover:-translate-y-1 duration-200">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="mailto:earllawrencebaguio@gmail.com" title="Email" class="hover:text-emerald-400 transition-colors transform hover:-translate-y-1 duration-200">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-8 right-8 hidden md:block">
+                <div class="grid grid-cols-2 gap-x-8 gap-y-2 text-[10px] font-mono text-zinc-500 text-right uppercase tracking-widest">
+                    <span class="text-white">Core //</span> <span>Kotlin • Java • C++ • C#</span>
+                    <span class="text-white">Stack //</span> <span>React • Firebase • MongoDB</span>
+                </div>
+            </div>
+        </section>
+
+        <div id="projects-container" class="flex flex-col relative z-10 w-full">
+            </div>
+
+        <footer id="contact" class="min-h-screen snap-start flex flex-col items-center justify-center border-t border-zinc-800/40 p-8 text-center bg-black/60 backdrop-blur-md relative z-10 pb-32">
+            <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-4 glow-text">Initiate Connection</h2>
+            <p class="font-mono text-xs text-emerald-500 uppercase tracking-widest mb-12">System standing by for inquiries.</p>
+            
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 text-lg font-mono">
+                <a href="https://github.com/EarlLawrence7" target="_blank" class="flex flex-col items-center gap-4 text-zinc-500 hover:text-emerald-400 transition-all transform hover:-translate-y-2 duration-300">
+                    <div class="w-20 h-20 rounded-full border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-4xl shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <span class="text-xs tracking-widest uppercase">GitHub</span>
+                </a>
+                
+                <a href="https://www.linkedin.com/in/earl-lawrence-baguio-3106b2287/" target="_blank" class="flex flex-col items-center gap-4 text-zinc-500 hover:text-emerald-400 transition-all transform hover:-translate-y-2 duration-300">
+                    <div class="w-20 h-20 rounded-full border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-4xl shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                        <i class="fab fa-linkedin"></i>
+                    </div>
+                    <span class="text-xs tracking-widest uppercase">LinkedIn</span>
+                </a>
+                
+                <a href="mailto:earllawrencebaguio@gmail.com" class="flex flex-col items-center gap-4 text-zinc-500 hover:text-emerald-400 transition-all transform hover:-translate-y-2 duration-300">
+                    <div class="w-20 h-20 rounded-full border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-4xl shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <span class="text-xs tracking-widest uppercase">Email</span>
+                </a>
+            </div>
+            
+            <div class="mt-24 text-[10px] font-mono text-zinc-600 tracking-widest uppercase">
+                SYSTEM.HALT // &copy; 2026 Earl Lawrence Baguio
+            </div>
+        </footer>
+    </main>
+
+    <div class="fixed bottom-0 left-0 w-full z-[90] bg-[#030303]/90 backdrop-blur-md border-t border-zinc-800/80 py-4 marquee-container overflow-hidden flex shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+        <div class="absolute left-0 top-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+        <div class="marquee-content flex items-center" id="tech-train"></div>
+    </div>
+
+    <div id="image-modal" class="fixed inset-0 z-[100] bg-black/95 hidden items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-6xl relative border border-zinc-800 shadow-[0_0_40px_rgba(0,0,0,1)] bg-[#050505]">
+            <div class="border-b border-zinc-800 p-4 flex justify-between items-center bg-black">
+                <span class="text-[10px] font-mono text-emerald-500 uppercase tracking-widest flex items-center gap-3" id="modal-title">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> Visual Evidence
+                </span>
+                <button id="close-modal" class="text-zinc-500 hover:text-white cursor-pointer transition-colors text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4 flex justify-center bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')]">
+                <img id="modal-img" src="" alt="Preview" class="max-h-[80vh] object-contain border border-zinc-800/50 grayscale hover:grayscale-0 transition-all duration-700">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- PROJECT DATA ---
+        const projectsData = [
+            {
+                title: "Smart Security Watch AI",
+                type: "Hardware & Mobile UI",
+                tech: "C++ • Kotlin • BLE • Behavioral AI",
+                context: "Standard physical security systems often lack integrated, edge-computed behavioral profiling directly tied to continuous user interaction.",
+                system: "A smart wearable security system integrated with behavioral AI to continuously authenticate users based on touch dynamics. Utilized stabilized BLE RSSI tracking to establish secure proximity thresholds.",
+                repo: "https://github.com/NaVi052102/AI-Security-AndroidApp",
+                image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=1920&q=80"
+            },
+            {
+                title: "BoardMate Connect",
+                type: "Mobile Engineering",
+                tech: "Kotlin • Android Studio • Firebase",
+                context: "Boarding house property management relies on highly fragmented communication and manual administrative tracking, creating friction between owners and tenants.",
+                system: "A native mobile application centralizing communication within the boarding community. Engineered inside Android Studio and fully integrated with Firebase infrastructure to handle real-time updates.",
+                repo: "https://github.com/EarlLawrence7/BoardMate_Connect",
+                image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1920&q=80"
+            },
+            {
+                title: "Boarder's Hub",
+                type: "Front-End Web Development",
+                tech: "React • Firebase",
+                context: "Users searching for local accommodations struggle to find, browse, and verify available boarding houses efficiently due to scattered data sources.",
+                system: "Led the front-end development of a centralized housing platform. Engineered interactive browsing interfaces using React, tightly coupled with Firebase to ensure real-time accuracy.",
+                repo: "https://github.com/EarlLawrence7/Boarders_Hub",
+                image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80"
+            },
+            {
+                title: "Productivity Tracker",
+                type: "Full-Stack Web System",
+                tech: "React (Vite) • MongoDB",
+                context: "Employers face systemic difficulties accurately tracking assigned tasks alongside real-time employee attendance and performance records.",
+                system: "Engineered an organizational productivity dashboard. Designed the rapid front-end utilizing Vite-powered React, and constructed the back-end storage pipelines through a persistent MongoDB database.",
+                repo: "https://github.com/jpenaso10/ProductivityTracker",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1920&q=80"
+            },
+            {
+                title: "Library Sorting System",
+                type: "Desktop / Web Application",
+                tech: "C# • Razor • MySQL",
+                context: "Physical library systems require optimized search and categorization algorithms to allow users to locate books without friction.",
+                system: "A robust library management tool constructed using C# and Razor syntax. Heavy focus placed on layout usability and rapid categorization features, backed by an optimized MySQL relational database.",
+                repo: "https://github.com/SibuyasGaid/Komfy-Group5",
+                image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1920&q=80"
+            },
+            {
+                title: "Cinema Ticket Booking",
+                type: "Desktop Application",
+                tech: "C# • Visual Studio • MS Access",
+                context: "Traditional cinematic ticket reservations require an intuitive digital interface to handle seating states, movie scheduling, and real-time locking.",
+                system: "A user-friendly desktop booking environment built entirely in C# and Visual Studio. Handles intricate seat reservation logic and schedule mapping, natively integrated with Microsoft Access.",
+                repo: "https://github.com/EarlLawrence7/OOP2_FINAL",
+                image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1920&q=80"
+            }
+        ];
+
+        // --- RENDER FULL SCREEN DYNAMIC PROJECTS ---
+        const container = document.getElementById('projects-container');
+        container.innerHTML = projectsData.map((proj, index) => `
+            <article class="relative min-h-screen w-full flex items-center snap-start overflow-hidden border-t border-zinc-800/40 group">
+                
+                <div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out scale-110 group-hover:scale-100" 
+                     style="background-image: url('${proj.image}'); opacity: 0.15; mix-blend-mode: luminosity;">
+                </div>
+                
+                <div class="absolute inset-0 z-0 bg-gradient-to-r from-[#030303] via-[#030303]/90 to-transparent"></div>
+                <div class="absolute inset-0 z-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/50"></div>
+
+                <div class="relative z-10 w-full p-8 md:p-16 max-w-6xl mx-auto opacity-0 translate-y-16 transition-all duration-[1200ms] ease-out project-content">
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-emerald-500 font-mono text-[10px] tracking-[0.2em] uppercase">Project // 0${index + 1}</span>
+                        <div class="h-px w-12 bg-emerald-500/50"></div>
+                        <span class="text-zinc-500 font-mono text-[10px] tracking-widest uppercase">${proj.type}</span>
+                    </div>
+                    
+                    <h3 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tighter drop-shadow-2xl glow-text">${proj.title}</h3>
+                    <p class="text-sm md:text-base font-mono text-emerald-400/90 mb-12 tracking-wider">${proj.tech}</p>
+                    
+                    <div class="grid md:grid-cols-12 gap-8 md:gap-16 text-sm leading-relaxed mb-12 max-w-4xl">
+                        <div class="md:col-span-5">
+                            <span class="text-white font-semibold block mb-3 tracking-wide text-xs uppercase font-mono"><i class="fas fa-folder-open text-emerald-500 mr-2"></i>Context</span>
+                            <p class="text-zinc-400">${proj.context}</p>
+                        </div>
+                        <div class="md:col-span-7 hud-line pl-6 md:pl-8 border-l border-zinc-700">
+                            <span class="text-white font-semibold block mb-3 tracking-wide text-xs uppercase font-mono"><i class="fas fa-microchip text-emerald-500 mr-2"></i>System</span>
+                            <p class="text-zinc-300">${proj.system}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-6 text-xs font-mono">
+                        <a href="${proj.repo}" target="_blank" class="px-8 py-4 border border-zinc-700 hover:border-emerald-500 hover:text-emerald-400 bg-black/50 backdrop-blur-md transition-all flex items-center gap-3 group/btn">
+                            [ GITHUB REPO ] <i class="fas fa-arrow-right transform group-hover/btn:translate-x-1 transition-transform"></i>
+                        </a>
+                        <button onclick="openPreview('${proj.image}', '${proj.title}')" class="px-8 py-4 border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all flex items-center gap-3 group/btn shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                            [ UI SHOWCASE ] <i class="fas fa-expand transform group-hover/btn:scale-110 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        // --- INTERSECTION OBSERVER FOR GRAND ENTRANCES ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.3 // Triggers when 30% of the project is visible
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Slide up and fade in
+                    entry.target.classList.remove('opacity-0', 'translate-y-16');
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.project-content').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- TECH STACK TRAIN ---
+        const techStack = [
+            { name: "KOTLIN", iconHTML: '<span class="text-icon font-bold text-lg text-zinc-500 mb-0.5">Kt</span>' },
+            { name: "JAVA", iconHTML: '<i class="fab fa-java text-xl text-zinc-500 mb-0.5"></i>' },
+            { name: "C++", iconHTML: '<span class="text-icon font-bold text-lg text-zinc-500 mb-0.5">C++</span>' },
+            { name: "DOTNET", iconHTML: '<span class="text-icon font-bold text-lg text-zinc-500 mb-0.5">C#</span>' },
+            { name: "REACT", iconHTML: '<i class="fab fa-react text-xl text-zinc-500 mb-0.5"></i>' },
+            { name: "ANDROID", iconHTML: '<i class="fab fa-android text-xl text-zinc-500 mb-0.5"></i>' },
+            { name: "FIREBASE", iconHTML: '<i class="fas fa-fire text-xl text-zinc-500 mb-0.5"></i>' },
+            { name: "SQL/NoSQL", iconHTML: '<i class="fas fa-database text-xl text-zinc-500 mb-0.5"></i>' },
+            { name: "AI TOOLS", iconHTML: '<i class="fas fa-microchip text-xl text-zinc-500 mb-0.5"></i>' }
+        ];
+
+        const trainContainer = document.getElementById('tech-train');
+        const createTrainSet = () => {
+            return techStack.map(tech => `
+                <div class="flex items-center">
+                    <div class="tech-node flex flex-col items-center justify-center w-14 h-14 border border-zinc-800/50 rounded-xl bg-zinc-900/50 cursor-pointer">
+                        ${tech.iconHTML}
+                        <span class="text-[8px] font-mono text-zinc-500">${tech.name}</span>
+                    </div>
+                    <div class="w-1 h-1 bg-zinc-800 rounded-full mx-6"></div>
+                </div>
+            `).join('');
+        };
+
+        let trainHTML = '';
+        for(let i=0; i<8; i++){ trainHTML += createTrainSet(); }
+        trainContainer.innerHTML = trainHTML;
+
+        // --- HUD TRACKERS ---
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        const trackerEl = document.getElementById('mouse-tracker');
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            trackerEl.textContent = `X:${String(mouseX).padStart(4, '0')} Y:${String(mouseY).padStart(4, '0')}`;
+        });
+
+        const clockEl = document.getElementById('live-clock');
+        function updateClock() {
+            const now = new Date();
+            clockEl.textContent = `PST ${now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Manila' })}`;
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // --- DEEP SPACE CANVAS ENGINE ---
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let meteors = [];
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            
+            particles = [];
+            const particleCount = Math.floor((width * height) / 8000); 
+            for(let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width, y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 1.2, vy: (Math.random() - 0.5) * 1.2, 
+                    radius: Math.random() * 2 + 0.5   
+                });
+            }
+
+            meteors = [];
+            for(let i = 0; i < 6; i++) spawnMeteor();
+        }
+
+        function spawnMeteor() {
+            meteors.push({
+                x: Math.random() * width * 1.5,
+                y: (Math.random() * -height) - 100,
+                length: Math.random() * 120 + 40,
+                speed: Math.random() * 6 + 6,
+                opacity: Math.random() * 0.5 + 0.3
+            });
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Falling Meteorites
+            for (let i = meteors.length - 1; i >= 0; i--) {
+                let m = meteors[i];
+                m.x -= m.speed;
+                m.y += m.speed;
+                
+                let tailX = m.x + m.length;
+                let tailY = m.y - m.length;
+                
+                let grad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+                grad.addColorStop(0, `rgba(255, 255, 255, ${m.opacity})`);
+                grad.addColorStop(0.1, `rgba(16, 185, 129, ${m.opacity * 0.8})`);
+                grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+                
+                ctx.beginPath();
+                ctx.moveTo(m.x, m.y);
+                ctx.lineTo(tailX, tailY);
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                if (m.x < -200 || m.y > height + 200) {
+                    meteors.splice(i, 1);
+                    spawnMeteor();
+                }
+            }
+
+            // Neural Constellation Particles
+            for(let i = 0; i < particles.length; i++) {
+                let p1 = particles[i];
+                p1.x += p1.vx; p1.y += p1.vy;
+
+                if(p1.x < 0 || p1.x > width) p1.vx *= -1;
+                if(p1.y < 0 || p1.y > height) p1.vy *= -1;
+
+                let dxMouse = p1.x - mouseX;
+                let dyMouse = p1.y - mouseY;
+                let distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+                
+                if(distMouse < 250) { 
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(mouseX, mouseY);
+                    ctx.strokeStyle = `rgba(16, 185, 129, ${0.4 * (1 - distMouse/250)})`; 
+                    ctx.lineWidth = 1; ctx.stroke();
+                    p1.x -= dxMouse * 0.01; p1.y -= dyMouse * 0.01;
+                }
+
+                for(let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dx = p1.x - p2.x; let dy = p1.y - p2.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+
+                    if(dist < 120) { 
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${(1 - dist/120) * 0.5})`; 
+                        ctx.lineWidth = 0.5; ctx.stroke();
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2);
+                let nodeOpacity = distMouse < 150 ? 1 : 0.4;
+                ctx.fillStyle = `rgba(255, 255, 255, ${nodeOpacity})`;
+                ctx.fill();
+            }
+            requestAnimationFrame(animate);
+        }
+        animate(); 
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('image-modal');
+        const modalImg = document.getElementById('modal-img');
+        const modalTitle = document.getElementById('modal-title');
+        
+        window.openPreview = function(imgSrc, title) {
+            modalImg.src = imgSrc;
+            modalTitle.innerHTML = `<div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> TARGET: ${title.toUpperCase()}`;
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            setTimeout(() => { modal.classList.add('opacity-100'); }, 10);
+        };
+
+        function closePreview() {
+            modal.classList.remove('opacity-100');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300); 
+        }
+
+        document.getElementById('close-modal').addEventListener('click', closePreview);
+        modal.addEventListener('click', (e) => { if(e.target === modal) closePreview(); });
+    </script>
+</body>
+</html>
